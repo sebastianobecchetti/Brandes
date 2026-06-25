@@ -1,0 +1,20 @@
+# in src/ tieni solo i sorgenti, ignora binari e file spuri
+/src/*
+!/src/*.cpp
+!/src/*.hpp
+!/src/*.h
+
+*.o
+a.out
+
+# intermedi LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# sistema
+.DS_Store
