@@ -58,7 +58,9 @@ betweenness centrality}}
 \section{La betweenness centrality}
 
 Nell'analisi delle reti reali --- sociali, biologiche, infrastrutturali --- ricorre
-l'esigenza di quantificare la rilevanza di un singolo nodo per la costruzione del grafo, e quindi quanto sia importante per la costruzione dei cammini minimi tra i vari nodi. Tra le misure proposte a tale scopo, una
+l'esigenza di quantificare la rilevanza di un singolo nodo all'interno della rete,
+ovvero quanto esso sia importante nel collegare fra loro gli altri nodi lungo i
+cammini minimi. Tra le misure proposte a tale scopo, una
 delle più diffuse è la \emph{betweenness centrality}, formalizzata da
 Freeman~\cite{freeman1977} a partire da idee precedentemente introdotte da
 Anthonisse~\cite{anthonisse1971}.
@@ -692,6 +694,14 @@ inserisce i vertici nell'ordine di visita nella pila \texttt{S} (la pila $S$ del
 pseudocodice). La coda dei nodi ancora da espandere è chiamata \texttt{Q}.
 Si osserva la piena corrispondenza con le righe 7--14 dello pseudocodice.
 
+Dal punto di vista del costo, la visita inserisce ed estrae ogni vertice dalla coda
+$Q$ una sola volta, con contributo $O(n)$; poiché il grafo è descritto tramite
+\emph{liste di adiacenza}, la scansione dei vicini esamina ogni arco una sola volta
+per ciascun estremo, per un totale di $\sum_{v\in V}\deg(v)=2m=O(m)$. La BFS costa
+pertanto $O(n+m)$ per sorgente. Con una matrice di adiacenza la sola scansione
+salirebbe a $O(n^2)$, poiché per ogni vertice si ispezionerebbero tutte le $n$
+possibili adiacenze anziché i soli vicini effettivi.
+
 Per la pila $S$ si è scelto \texttt{std::stack}, che corrisponde direttamente alla
 struttura dello pseudocodice. Una soluzione equivalente sarebbe un \texttt{std::vector}
 riempito durante la visita e percorso all'indietro: le due realizzazioni hanno la
@@ -745,6 +755,18 @@ while (!S.empty()) {
 Al termine del ciclo su tutte le sorgenti, trattandosi di un grafo non
 orientato, ciascuna coppia risulta conteggiata due volte; il valore $C_B[v]$
 viene pertanto diviso per $2$.
+
+Quanto al costo, il ciclo estrae dalla pila ciascun vertice una sola volta e, per
+ogni $w$ estratto, ne scandisce i vicini: ogni arco è così esaminato una sola volta
+per ciascun estremo, per un totale di
+\[
+	\sum_{w\in V}\deg(w) = 2m = O(m)
+\]
+scansioni. Sommando l'estrazione degli $n$ vertici, la fase di accumulo costa
+$O(n+m)$ per sorgente, quanto il calcolo dei cammini minimi che la precede.
+L'elaborazione di una singola sorgente è dunque lineare, $O(n+m)$, e il costo
+complessivo dell'algoritmo, ripetuto sulle $n$ sorgenti, è $O(nm)$ per grafi con
+$m\gtrsim n$ (il sovraccarico lineare per sorgente è ripreso nel Capitolo~4).
 
 \section{Ottimizzazioni implementative}
 
@@ -903,7 +925,7 @@ mediante \texttt{continue}. In tal modo ciascun vertice è inserito nella pila
 indispensabile per la successiva fase di accumulo.
 
 La correttezza di questo schema --- finalizzare un vertice alla sua \emph{prima}
-estrazione e scartare le copie successive --- è dovuta appunto
+estrazione e scartare le copie successive --- discende appunto
 dal min-heap: nel momento in cui un vertice $v$ viene estratto per la
 prima volta, la sua distanza provvisoria è \emph{già} quella minima definitiva, e
 nessun cammino più breve potrà essere scoperto in seguito.
