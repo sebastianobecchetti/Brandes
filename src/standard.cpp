@@ -59,26 +59,26 @@ std::vector<double> betweenness_standard(const Grafo &g) {
   int n = g.n;
 
   // --- Fase 1: all-pairs shortest paths + conteggio dei cammini minimi ---
-  // dist[s][t] = distanza, sigma[s][t] = numero di cammini minimi.
+  // d[s][t] = distanza, sigma[s][t] = numero di cammini minimi.
   // Una BFS da ogni sorgente: costo O(n * (n + m)), spazio O(n^2).
-  std::vector<std::vector<int>> dist(n, std::vector<int>(n, -1));
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, -1));
   std::vector<std::vector<long long>> sigma(n, std::vector<long long>(n, 0));
 
+  std::queue<int> Q; // riusata tra le sorgenti: la BFS la svuota ogni volta
   for (int s = 0; s < n; s++) {
-    dist[s][s] = 0;
+    d[s][s] = 0;
     sigma[s][s] = 1;
-    std::queue<int> coda;
-    coda.push(s);
-    while (!coda.empty()) {
-      int u = coda.front();
-      coda.pop();
-      for (int w : g.adj[u]) {
-        if (dist[s][w] == -1) {
-          dist[s][w] = dist[s][u] + 1;
-          coda.push(w);
+    Q.push(s);
+    while (!Q.empty()) {
+      int v = Q.front();
+      Q.pop();
+      for (int w : g.adj[v]) {
+        if (d[s][w] == -1) {
+          d[s][w] = d[s][v] + 1;
+          Q.push(w);
         }
-        if (dist[s][w] == dist[s][u] + 1)
-          sigma[s][w] += sigma[s][u];
+        if (d[s][w] == d[s][v] + 1)
+          sigma[s][w] += sigma[s][v];
       }
     }
   }
@@ -90,12 +90,12 @@ std::vector<double> betweenness_standard(const Grafo &g) {
   std::vector<double> CB(n, 0.0);
   for (int v = 0; v < n; v++) {
     for (int s = 0; s < n; s++) {
-      if (s == v || dist[s][v] < 0)
+      if (s == v || d[s][v] < 0)
         continue;
       for (int t = 0; t < n; t++) {
-        if (t == v || t == s || dist[v][t] < 0 || sigma[s][t] == 0)
+        if (t == v || t == s || d[v][t] < 0 || sigma[s][t] == 0)
           continue;
-        if (dist[s][t] == dist[s][v] + dist[v][t]) // v e' su un cammino minimo
+        if (d[s][t] == d[s][v] + d[v][t]) // v e' su un cammino minimo
           CB[v] += (double)sigma[s][v] * sigma[v][t] / sigma[s][t];
       }
     }

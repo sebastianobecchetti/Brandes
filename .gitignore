@@ -7,6 +7,14 @@
 *.o
 a.out
 
+# binari compilati a root
+/b
+/bw
+/standard
+
+# output runtime della UI
+grafo_ui.dot
+
 # intermedi LaTeX
 *.aux
 *.log
@@ -18,3 +26,7 @@ a.out
 
 # sistema
 .DS_Store
+
+# cache Python
+__pycache__/
+*.pyc

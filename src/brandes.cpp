@@ -154,9 +154,7 @@ int main() {
   const int REP = 5; // misure ripetute per punto: si prende il minimo
 
   // Warm-up: gira brandes a vuoto su un grafo medio per far salire la
-  // frequenza CPU (turbo) e scaldare le cache prima di cronometrare.
-  // I risultati sono scartati apposta (volatile evita che il
-  // compilatore ottimizzi via la chiamata).
+  // frequenza CPU,
   for (int w = 0; w < 3; w++) {
     Grafo gw = genera_grafo(500, 5000, w);
     std::vector<double> CBw = brandes(gw);
